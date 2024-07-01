@@ -43,18 +43,32 @@ def replace_references(text: str, references: List):
 def add_references_answers(text: str, citations: List,response):
     textref = f"\n References:"
     textlinks = []
-    
+    #print (f"Answer: {text}")
+    #print (citations)
+
     for i, citation in enumerate(citations):
-        citindex = int(citation.sources[0].reference_id)
-        url = response.answer.references[citindex].chunk_info.document_metadata.uri
-        title = response.answer.references[citindex].chunk_info.document_metadata.title
+        #citindex = int(citation.sources[0].reference_index)
+        print(f"citation reference index {i}")
+        title = citation.title
+        url = citation.document
+        #url = response.references[citindex].chunk_info.document_metadata.uri
+        #title = response.references[citindex].chunk_info.document_metadata.title
         if not any(url in link for link in textlinks):
             textlinks.append(f"\n [{title}]({url})")
     text = text + textref + "".join(textlinks)
     return text
 
+
 def search_datastore(query:str):
-    return search_sample(project_id, location, data_store_id,query)
+    response = search_sample(project_id, location, data_store_id,query)
+    #print (response)
+    try:
+        content = f"{add_references_answers(response.summary.summary_text, response.summary.summary_with_metadata.references,response)}"
+    except AttributeError:
+        print ("Caught AttributeError Exception")
+        content = f"{response.summary.summary_with_metadata}"
+    #print(response.summary.summary_with_metadata)    
+    return content
 
 def search_sample( 
     project_id: str,
@@ -118,59 +132,4 @@ def search_sample(
 
 
     response = client.search(request)
-
-
-    try:
-        content = f"{replace_references(response.summary.summary_text, response.summary.summary_with_metadata.references)}"
-        #content = f"{add_references_answers(response.answer.answer_text, response.answer.citations,response)}"
-        content = f"{response.summary.summary_text}  {response.summary.summary_with_metadata.references}"
-        print (content)
-
-    except AttributeError:
-        print ("Caught AttributeError Exception")
-        content = f"{response.reply.summary.summary_text}"
-    
-    #print(response.summary.summary_with_metadata)    
-    return content
-
-
-
-
-#querystr = "relationship between pollution and cancer"
-#response = search_sample(project_id=project_id, location=location, data_store_id = data_store_id, search_query = querystr)
-
-#response = search_datastore(querystr)
-
-#print (response)
-#exit(0)
-
-
-
-
-# from google.protobuf.json_format import MessageToDict
-
-# data = MessageToDict(response._pb, including_default_value_fields=True)
-# print(data)
-
-# #MessageToDict()
-# #translate.Client()
-# #exit(0)
-# name1 = response.results[0].document.name
-# derived_struct_data = dict(response.results[0].document.derived_struct_data)
-
-# print (f"PRINTING {name1 } ")
-
-# #snippets = list(derived_struct_data.snippets)
-# snippets = derived_struct_data['snippets']
-# print (f"PRINTING {str(derived_struct_data)}")
-
-# #response_json = google.protobuf.json_format.MessageToJson(response)
-# for field,value in derived_struct_data.items():
-
-#     print (f" INSIDE LOOP { field }-- {value}" )
-#     if field == 'snippets':
-#         snippet_dict = dict(value)
-#         for s in snippet_dict.keys():
-#             print(f" INNERLOOP {s} ---> {snippet_dict[s]}") 
-
-#     #snippets -> list_value -> struct_value -> snippet
+    return response
