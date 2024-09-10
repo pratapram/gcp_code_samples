@@ -1,4 +1,4 @@
-# Router Design pattner using Gemini function calling
+# Router Design pattern using Gemini function calling
 
 + Step 1. Clone the repository and then cd geminifunction
 + Step 2. Modify main.py to add your project_id. Modify searchpythonapi.py file to add your project_id and datastore_id
