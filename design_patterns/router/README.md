@@ -5,3 +5,5 @@
 + Step 3. Run this command to create a cloudrun service
 
 `gcloud run deploy yourservicename   --source .   --region="us-west1"   --allow-unauthenticated`
+
+This is referenced from this blog: https://medium.com/@pratap.ram/routing-design-pattern-using-gemini-function-calling-on-vertex-ai-9a5ab2c518a5
