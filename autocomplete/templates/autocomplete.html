@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Autocomplete Example</title>
+</head>
+<body>
+
+  <h1>Autocomplete Example -  Pratap Ramamurthy   Contact: @pratapram</h1>
+  <input type="text" id="myTextbox" size="50"  placeholder="Start typing...">
+
+  <script>
+const textbox = document.getElementById('myTextbox');
+const suggestionsDropdown = document.createElement('div');
+suggestionsDropdown.classList.add('suggestions-dropdown');
+suggestionsDropdown.style.display = 'none'; // Initially hide the dropdown
+
+suggestionsDropdown.style.cssText = `
+  border: 1px solid #ccc;
+  border-top: none; /* No border on top to connect with the textbox */
+  position: absolute;
+  left: ${textbox.offsetLeft}px;
+  top: ${textbox.offsetTop + textbox.offsetHeight}px;
+  width: ${textbox.offsetWidth}px; /* Match the width of the textbox */
+  background-color: white;
+  z-index: 10; /* Ensure the dropdown appears on top */
+`;
+
+document.body.appendChild(suggestionsDropdown); // Append the dropdown to the body
+
+textbox.addEventListener('input', (event) => {
+  const userInput = event.target.value;
+
+  if (userInput.length >= 3) {
+    fetch('/api/vertex-ai-autocomplete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const suggestions = data.suggestions;
+
+      // Clear previous suggestions
+      suggestionsDropdown.innerHTML = '';
+
+      // Populate the dropdown with new suggestions
+      suggestions.forEach(suggestion => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.textContent = suggestion;
+        suggestionItem.addEventListener('click',   
+ () => {
+          textbox.value = suggestion;
+          suggestionsDropdown.style.display = 'none'; // Hide the dropdown after selection
+        });
+        suggestionsDropdown.appendChild(suggestionItem);
+      });
+
+      // Position and display the dropdown
+      suggestionsDropdown.style.position = 'absolute';
+      suggestionsDropdown.style.left = textbox.offsetLeft + 'px';
+      suggestionsDropdown.style.top = textbox.offsetTop + textbox.offsetHeight + 'px';
+      suggestionsDropdown.style.display = 'block';
+    })
+    .catch(error => {
+      console.error('Error fetching suggestions:', error);
+    });
+  } else {
+    // Hide the dropdown if the user input is too short
+    suggestionsDropdown.style.display = 'none';
+  }
+});
+
+// Hide the dropdown when clicking outside of it or the textbox
+document.addEventListener('click', (event) => {
+  if (event.target !== textbox && event.target !== suggestionsDropdown && !suggestionsDropdown.contains(event.target)) {
+    suggestionsDropdown.style.display = 'none';
+  }
+});
+  </script>
+</body>
+</html>
