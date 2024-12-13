@@ -8,5 +8,5 @@ To create a cloudrun app from this code follow these setps
 
 - Step 2: deploy this app using the below command
 
-gloud run deploy autocomplete   --source .   --region="us-central1"   --allow-unauthenticated
+gcloud run deploy autocomplete   --source .   --region="us-central1"   --allow-unauthenticated
 
