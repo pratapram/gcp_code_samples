@@ -1,4 +1,4 @@
-# Router Design pattern using Gemini function calling
+# Chainlit app with Reasoning engine backend
 
 + Step 1. Clone the repository and then cd into gcp_code_samples/langchainrag
 + Step 2. Modify main.py to add your project_id, reasoning_engine_id
